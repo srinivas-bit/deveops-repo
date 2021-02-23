@@ -1,0 +1,27 @@
+import hudson.model.StringParameterValue
+import hudson.model.ParametersAction
+
+def env = build.getEnvironment(listener)
+String releaseVersion = env.get('releaseVersion')
+String nextSnapshotVersion = env.get('nextSnapshotVersion')
+
+if (!releaseVersion) {
+  String pomPath = build.workspace.toString() + '/library1/pom.xml';
+  def pom = new XmlSlurper().parse(new File(pomPath))
+  releaseVersion =
+        pom.version.toString().replace('-SNAPSHOT', '')
+  println "releaseVersion (calculated) = $releaseVersion"
+  def param = new StringParameterValue('releaseVersion', releaseVersion)
+  build.replaceAction(new ParametersAction(param))
+}
+
+if (!nextSnapshotVersion) {
+  def tokens = releaseVersion.split('\.')
+  nextSnapshotVersion =
+        tokens[0] + '.' + (Integer.parseInt(tokens[1]) + 1) + '-SNAPSHOT'
+  println "nextSnapshotVersion (calculated) = $nextSnapshotVersion"
+  def param1 = new StringParameterValue('releaseVersion', releaseVersion)
+  def param2 =
+        new StringParameterValue('nextSnapshotVersion', nextSnapshotVersion)
+  build.replaceAction(new ParametersAction(param1, param2))
+}
