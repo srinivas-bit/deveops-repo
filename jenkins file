@@ -10,7 +10,7 @@ pipeline {
             
             }
             
-          }  
+         }  
        
          stage("Build"){
            
@@ -18,7 +18,7 @@ pipeline {
              echo 'building the application'
              }
              
-           }
+          }
            
            stage("test"){
            
@@ -34,7 +34,7 @@ pipeline {
                  
                  }
                  
-              }   
+            }  
        }
 }       
             
